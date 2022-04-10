@@ -1,6 +1,16 @@
-import { Controller, Get, HttpStatus, Param, Req, Res } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpStatus,
+  Param,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { Response, Request } from 'express';
 import { AuthService } from './auth.service';
+import { RefreshGuard } from './guards/refresh.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -43,5 +53,23 @@ export class AuthController {
       success: true,
       redirect: '/info',
     };
+  }
+
+  @Post('refresh')
+  @UseGuards(RefreshGuard)
+  async refresh(
+    @Req() request: Request,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    const tokens = await this.authService.refresh(request.cookies.Refresh);
+
+    if (tokens) {
+      const { refreshToken, accessToken: bearer } = tokens;
+      response.cookie('Refresh', refreshToken, { httpOnly: true });
+      return {
+        success: true,
+        bearer,
+      };
+    }
   }
 }

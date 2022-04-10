@@ -4,7 +4,7 @@ import { Request } from 'express';
 import { Token } from '../utils/token.util';
 
 @Injectable()
-export class IsRefreshGuard implements CanActivate {
+export class RefreshGuard implements CanActivate {
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
