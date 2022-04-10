@@ -18,6 +18,12 @@ export class User {
   @Prop()
   currency: string;
 
+  @Prop()
+  email: string;
+
+  @Prop({ default: false })
+  isActivate: boolean;
+
   @Prop({ default: 2 })
   timezone: number;
 
