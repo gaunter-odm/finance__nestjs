@@ -1,14 +1,16 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { Request } from 'express';
-import { Token } from '../utils/token.util';
+import { TokenService } from '../utils/token.util';
 
 @Injectable()
 export class RefreshGuard implements CanActivate {
+  constructor(private token: TokenService) {}
+
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
     const request: Request = context.switchToHttp().getRequest();
-    return Token.verifyRefresh(request.cookies.Refresh);
+    return this.token.verifyRefresh(request.cookies.Refresh);
   }
 }

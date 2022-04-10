@@ -5,7 +5,7 @@ import { Model } from 'mongoose';
 import { verifyLink } from './utils/verifyLink.util';
 import { MagikLink, MagikLinkDocument } from '../schemas/MagikLink.schema';
 import { User, UserDocument } from '../schemas/User.schema';
-import { Token } from './utils/token.util';
+import { TokenService } from './utils/token.util';
 import {
   RefreshToken,
   RefreshTokenDocument,
@@ -19,7 +19,9 @@ interface Tokens {
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectModel(MagikLink.name) private magikModel: Model<MagikLinkDocument>,
+    private token: TokenService,
+    @InjectModel(MagikLink.name)
+    private magikModel: Model<MagikLinkDocument>,
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     @InjectModel(RefreshToken.name)
     private refreshModel: Model<RefreshTokenDocument>,
@@ -31,10 +33,10 @@ export class AuthService {
 
     const { _id } = link.user;
 
-    const accessToken = Token.createAccess({ _id }, '10m');
+    const accessToken = this.token.createAccess({ _id }, '10m');
     const refresh = new this.refreshModel({
       user: _id,
-      token: Token.createRefresh('1d'),
+      token: this.token.createRefresh('1d'),
     });
 
     try {
@@ -56,8 +58,8 @@ export class AuthService {
     const refresh = await this.refreshModel.findOne({ token });
     if (!refresh) return false;
 
-    const refreshToken = Token.createRefresh('1d');
-    const accessToken = Token.createAccess({ _id: refresh.user }, '15m');
+    const refreshToken = this.token.createRefresh('1d');
+    const accessToken = this.token.createAccess({ _id: refresh.user }, '15m');
 
     refresh.token = refreshToken;
     await refresh.save();
