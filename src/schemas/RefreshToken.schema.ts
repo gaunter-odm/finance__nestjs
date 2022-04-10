@@ -11,9 +11,6 @@ export class RefreshToken {
 
   @Prop({ required: true })
   token: string;
-
-  @Prop({ required: true })
-  expiresIn: number;
 }
 
 export const RefreshTokenSchema = SchemaFactory.createForClass(RefreshToken);
