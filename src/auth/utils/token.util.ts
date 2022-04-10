@@ -1,24 +1,30 @@
-import { ACCESS_SECRET, REFRESH_SECRET } from '../../config';
 import { JwtPayload, sign, verify } from 'jsonwebtoken';
 import { Types } from 'mongoose';
+import { ConfigService } from '@nestjs/config';
+import { Injectable } from '@nestjs/common';
 
 interface JWTPayload extends JwtPayload {
   _id: Types.ObjectId;
 }
 
-export class Token {
-  static readonly accessSecret: string = ACCESS_SECRET;
-  static readonly refreshSecret: string = REFRESH_SECRET;
+@Injectable()
+export class TokenService {
+  constructor(private configService: ConfigService) {}
 
-  static createAccess(payload: JWTPayload, expiresIn: string): string {
-    return sign(payload, this.accessSecret, { expiresIn });
+  readonly accessSecret = this.configService.get('ACCESS_SECRET');
+  readonly refreshSecret = this.configService.get('REFRESH_SECRET');
+
+  createAccess(payload: JWTPayload, expiresIn: string): string {
+    return sign(payload, this.accessSecret, {
+      expiresIn,
+    });
   }
 
-  static createRefresh(expiresIn): string {
+  createRefresh(expiresIn): string {
     return sign({}, this.refreshSecret, { expiresIn });
   }
 
-  static verifyAccess(token: string): false | JwtPayload {
+  verifyAccess(token: string): false | JwtPayload {
     try {
       const jwt = verify(token, this.accessSecret);
       if (typeof jwt !== 'string') return jwt;
@@ -27,7 +33,7 @@ export class Token {
     }
   }
 
-  static verifyRefresh(token: string): boolean {
+  verifyRefresh(token: string): boolean {
     try {
       return !!verify(token, this.refreshSecret);
     } catch (e) {
