@@ -7,6 +7,7 @@ import { join } from 'path';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfirmLink, ConfirmLinkSchema } from '../schemas/ConfirmLink.schema';
 import { TokenService } from '../auth/utils/token.util';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -16,12 +17,16 @@ import { TokenService } from '../auth/utils/token.util';
         schema: ConfirmLinkSchema,
       },
     ]),
-    MailerModule.forRoot({
-      transport: process.env.SMTP,
-      template: {
-        dir: join(__dirname, 'templates'),
-        adapter: new HandlebarsAdapter(),
-      },
+    MailerModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        transport: configService.get('SMTP'),
+        template: {
+          dir: join(__dirname, 'templates'),
+          adapter: new HandlebarsAdapter(),
+        },
+      }),
     }),
   ],
   controllers: [MailController],
