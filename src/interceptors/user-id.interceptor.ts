@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { Request } from 'express';
-import { TokenService } from '../auth/utils/token.util';
+import { TokenService } from '../token/token.service';
 
 @Injectable()
 export class UserIdInterceptor implements NestInterceptor {

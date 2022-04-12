@@ -1,7 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { Request } from 'express';
-import { TokenService } from '../utils/token.util';
+import { TokenService } from '../../token/token.service';
 
 @Injectable()
 export class RefreshGuard implements CanActivate {

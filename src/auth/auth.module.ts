@@ -8,7 +8,6 @@ import {
   RefreshToken,
   RefreshTokenSchema,
 } from '../schemas/RefreshToken.schema';
-import { TokenService } from './utils/token.util';
 
 @Module({
   imports: [
@@ -19,6 +18,6 @@ import { TokenService } from './utils/token.util';
     ]),
   ],
   controllers: [AuthController],
-  providers: [AuthService, TokenService],
+  providers: [AuthService],
 })
 export class AuthModule {}

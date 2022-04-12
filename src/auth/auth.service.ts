@@ -5,11 +5,11 @@ import { Model } from 'mongoose';
 import { verifyLink } from './utils/verifyLink.util';
 import { MagikLink, MagikLinkDocument } from '../schemas/MagikLink.schema';
 import { User, UserDocument } from '../schemas/User.schema';
-import { TokenService } from './utils/token.util';
 import {
   RefreshToken,
   RefreshTokenDocument,
 } from '../schemas/RefreshToken.schema';
+import { TokenService } from '../token/token.service';
 
 interface Tokens {
   accessToken: string;
@@ -55,6 +55,7 @@ export class AuthService {
   }
 
   async refresh(token: string): Promise<false | Tokens> {
+    // todo: Заменить на findOneAndDelete()
     const refresh = await this.refreshModel.findOne({ token });
     if (!refresh) return false;
 
@@ -64,6 +65,7 @@ export class AuthService {
     refresh.token = refreshToken;
     await refresh.save();
 
+    // fixme: use ResponseInterface
     return {
       accessToken,
       refreshToken,

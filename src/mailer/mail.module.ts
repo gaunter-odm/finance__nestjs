@@ -6,7 +6,6 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
 import { join } from 'path';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfirmLink, ConfirmLinkSchema } from '../schemas/ConfirmLink.schema';
-import { TokenService } from '../auth/utils/token.util';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
@@ -30,6 +29,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     }),
   ],
   controllers: [MailController],
-  providers: [MailService, TokenService],
+  providers: [MailService],
 })
 export class MailModule {}

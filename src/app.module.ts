@@ -6,11 +6,11 @@ import { MongooseModule, MongooseModuleOptions } from '@nestjs/mongoose';
 import { AuthModule } from './auth/auth.module';
 import { MailModule } from './mailer/mail.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { TokenService } from './auth/utils/token.util';
+import { TokenModule } from './token/token.module';
 
 @Module({
   controllers: [AppController],
-  providers: [AppService, TokenService],
+  providers: [AppService],
   imports: [
     PurchasesModule,
     ConfigModule.forRoot({ isGlobal: true }),
@@ -23,6 +23,7 @@ import { TokenService } from './auth/utils/token.util';
     }),
     AuthModule,
     MailModule,
+    TokenModule,
   ],
 })
 export class AppModule {}
