@@ -1,10 +1,10 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, SchemaTypes, Types } from 'mongoose';
-import { User } from './User.schema';
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Document, SchemaTypes, Types } from "mongoose";
+import { User } from "./User.schema";
 
 export type MagikLinkDocument = MagikLink & Document;
 
-@Schema()
+@Schema({ timestamps: true, expires: "5m" })
 export class MagikLink {
   @Prop({ type: SchemaTypes.ObjectId, ref: User.name, required: true })
   user!: Types.ObjectId;
