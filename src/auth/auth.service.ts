@@ -1,14 +1,14 @@
-import { Injectable } from "@nestjs/common";
-import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 
-import { MagikLink, MagikLinkDocument } from "../schemas/MagikLink.schema";
-import { User, UserDocument } from "../schemas/User.schema";
+import { MagikLink, MagikLinkDocument } from '../schemas/MagikLink.schema';
+import { User, UserDocument } from '../schemas/User.schema';
 import {
   RefreshToken,
-  RefreshTokenDocument
-} from "../schemas/RefreshToken.schema";
-import { TokenService } from "../token/token.service";
+  RefreshTokenDocument,
+} from '../schemas/RefreshToken.schema';
+import { TokenService } from '../token/token.service';
 
 interface Tokens {
   accessToken: string;
@@ -23,9 +23,8 @@ export class AuthService {
     private magikModel: Model<MagikLinkDocument>,
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     @InjectModel(RefreshToken.name)
-    private refreshModel: Model<RefreshTokenDocument>
-  ) {
-  }
+    private refreshModel: Model<RefreshTokenDocument>,
+  ) {}
 
   async login(magik: string): Promise<Tokens | false> {
     try {
@@ -36,7 +35,7 @@ export class AuthService {
       const accessToken = this.token.createAccess({ _id });
       const refresh = new this.refreshModel({
         user: _id,
-        token: this.token.createRefresh()
+        token: this.token.createRefresh(),
       });
 
       await refresh.save();
@@ -66,7 +65,7 @@ export class AuthService {
     // fixme: use ResponseInterface
     return {
       accessToken,
-      refreshToken
+      refreshToken,
     };
   }
 }
