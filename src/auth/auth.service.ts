@@ -1,15 +1,14 @@
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Injectable } from "@nestjs/common";
+import { InjectModel } from "@nestjs/mongoose";
+import { Model } from "mongoose";
 
-import { verifyLink } from './utils/verifyLink.util';
-import { MagikLink, MagikLinkDocument } from '../schemas/MagikLink.schema';
-import { User, UserDocument } from '../schemas/User.schema';
+import { MagikLink, MagikLinkDocument } from "../schemas/MagikLink.schema";
+import { User, UserDocument } from "../schemas/User.schema";
 import {
   RefreshToken,
-  RefreshTokenDocument,
-} from '../schemas/RefreshToken.schema';
-import { TokenService } from '../token/token.service';
+  RefreshTokenDocument
+} from "../schemas/RefreshToken.schema";
+import { TokenService } from "../token/token.service";
 
 interface Tokens {
   accessToken: string;
@@ -24,28 +23,28 @@ export class AuthService {
     private magikModel: Model<MagikLinkDocument>,
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     @InjectModel(RefreshToken.name)
-    private refreshModel: Model<RefreshTokenDocument>,
-  ) {}
+    private refreshModel: Model<RefreshTokenDocument>
+  ) {
+  }
 
   async login(magik: string): Promise<Tokens | false> {
-    const link: MagikLinkDocument = await this.magikModel.findOne({ magik });
-    if (!verifyLink(link)) return false;
-
-    const { _id } = link.user;
-
-    const accessToken = this.token.createAccess({ _id }, '10m');
-    const refresh = new this.refreshModel({
-      user: _id,
-      token: this.token.createRefresh('1d'),
-    });
-
     try {
+      const link: MagikLinkDocument = await this.magikModel.findOne({ magik });
+
+      const { _id } = link.user;
+
+      const accessToken = this.token.createAccess({ _id });
+      const refresh = new this.refreshModel({
+        user: _id,
+        token: this.token.createRefresh()
+      });
+
       await refresh.save();
+
+      return { accessToken, refreshToken: refresh.token };
     } catch (e) {
       return false;
     }
-
-    return { accessToken, refreshToken: refresh.token };
   }
 
   async logout(token: string | undefined): Promise<boolean> {
@@ -55,12 +54,11 @@ export class AuthService {
   }
 
   async refresh(token: string): Promise<false | Tokens> {
-    // todo: Заменить на findOneAndDelete()
     const refresh = await this.refreshModel.findOne({ token });
     if (!refresh) return false;
 
-    const refreshToken = this.token.createRefresh('1d');
-    const accessToken = this.token.createAccess({ _id: refresh.user }, '15m');
+    const refreshToken = this.token.createRefresh();
+    const accessToken = this.token.createAccess({ _id: refresh.user });
 
     refresh.token = refreshToken;
     await refresh.save();
@@ -68,7 +66,7 @@ export class AuthService {
     // fixme: use ResponseInterface
     return {
       accessToken,
-      refreshToken,
+      refreshToken
     };
   }
 }
