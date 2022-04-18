@@ -11,9 +11,6 @@ export class MagikLink {
 
   @Prop({ unique: true, required: true })
   magik: string;
-
-  @Prop({ required: true })
-  expiresIn: number;
 }
 
 export const MagikLinkSchema = SchemaFactory.createForClass(MagikLink);
